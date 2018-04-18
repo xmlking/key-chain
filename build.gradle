@@ -1,0 +1,67 @@
+buildscript {
+    ext {
+        kotlin_version = '1.2.31'
+
+        junitGradleVersion = "1.0.1"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$junitGradleVersion"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
+mainClassName = 'keychain.KeyChainKt'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
+    compile "commons-codec:commons-codec:$commonsCodecVersion"
+    compile "io.javalin:javalin:$javalinVersion"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion"
+
+    testRuntime("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+test {
+    useJUnitPlatform {
+        includeTags 'fast', 'smoke & feature-a'
+        excludeTags 'slow', 'ci'
+        includeEngines 'junit-jupiter'
+        excludeEngines 'junit-vintage'
+    }
+    failFast = true
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
